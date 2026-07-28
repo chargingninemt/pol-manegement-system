@@ -138,10 +138,8 @@
                         <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">ভ্রমণের বিবরণ / রুট</label><input type="text" id="vdra-route" placeholder="যেমন: রাবার বাগান" required class="w-full px-3 py-2 border rounded bg-white"></div>
                         <div><label class="block text-xs font-bold text-slate-500 mb-1">বাহিরের সময়</label><input type="text" id="vdra-time-out" placeholder="০৬০০" class="w-full px-3 py-2 border rounded bg-white"></div>
                         <div><label class="block text-xs font-bold text-slate-500 mb-1">আগমনের সময়</label><input type="text" id="vdra-time-in" placeholder="১৮০০" class="w-full px-3 py-2 border rounded bg-white"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">শুরুর মিটার</label><input type="number" id="vdra-km-start" placeholder="KM" required class="w-full px-3 py-2 border rounded bg-white font-bold"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">শেষের মিটার</label><input type="number" id="vdra-km-end" placeholder="KM" required class="w-full px-3 py-2 border rounded bg-white font-bold"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">মোট কি.মি চলেছে</label><input type="number" id="vdra-km-total" readonly class="w-full px-3 py-2 border border-emerald-300 rounded bg-emerald-50 font-bold text-emerald-700"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">তেল খরচ (অটো)</label><input type="number" id="vdra-fuel-cons" readonly class="w-full px-3 py-2 border border-red-300 rounded bg-red-50 font-bold text-red-600"></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">চালিত কি.মি (Run KM)</label><input type="number" id="vdra-km-run" placeholder="কত কি.মি. চলেছে" required class="w-full px-3 py-2 border border-emerald-300 rounded bg-emerald-50 font-bold text-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">তেল খরচ (অটো ক্যালকুলেটেড)</label><input type="number" id="vdra-fuel-cons" readonly class="w-full px-3 py-2 border border-red-300 rounded bg-red-50 font-bold text-red-600"></div>
                     </div>
 
                     <!-- Dynamic POL Items Receiving -->
@@ -448,34 +446,23 @@
         // ==========================================
         // 4. VDRA CALCULATION LOGIC
         // ==========================================
-        const kmStartInput = document.getElementById('vdra-km-start');
-        const kmEndInput = document.getElementById('vdra-km-end');
-        const kmTotalInput = document.getElementById('vdra-km-total');
+        const kmRunInput = document.getElementById('vdra-km-run');
         const fuelConsInput = document.getElementById('vdra-fuel-cons');
         const vehSelect = document.getElementById('vdra-veh-select');
 
         function calculateVDRA() {
-            const start = parseInt(kmStartInput.value) || 0;
-            const end = parseInt(kmEndInput.value) || 0;
+            const runKm = parseFloat(kmRunInput.value) || 0;
             const selectedOption = vehSelect.options[vehSelect.selectedIndex];
             const kpl = parseFloat(selectedOption?.getAttribute('data-kpl')) || 0;
 
-            if (end > start) {
-                const totalKm = end - start;
-                kmTotalInput.value = totalKm;
-                if(kpl > 0) {
-                    fuelConsInput.value = (totalKm / kpl).toFixed(2);
-                } else {
-                    fuelConsInput.value = 0;
-                }
+            if (runKm > 0 && kpl > 0) {
+                fuelConsInput.value = (runKm / kpl).toFixed(2);
             } else {
-                kmTotalInput.value = '';
                 fuelConsInput.value = '';
             }
         }
 
-        kmStartInput.addEventListener('input', calculateVDRA);
-        kmEndInput.addEventListener('input', calculateVDRA);
+        kmRunInput.addEventListener('input', calculateVDRA);
         vehSelect.addEventListener('change', calculateVDRA);
 
         // ==========================================
