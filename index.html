@@ -23,21 +23,19 @@
             
             .print-hide { display: none !important; }
             
-            /* Orientation defaults will be requested via prompt */
-            @page { margin: 10mm; }
-            
-            .govt-table { width: 100%; border-collapse: collapse; margin-top: 10px; border: 1px solid #000; }
+            /* Custom Table Styles for Excel-like view */
+            .govt-table { width: 100%; border-collapse: collapse; margin-top: 10px; border: 1.5px solid #000; }
             .govt-table th, .govt-table td { 
                 border: 1px solid #000; 
                 padding: 4px; 
-                font-size: 11px; 
+                font-size: 11px; /* Smaller font to fit legal/A4 pages */
                 color: #000;
                 word-wrap: break-word;
+                text-align: center;
             }
-            .govt-table th { font-weight: bold; text-align: center; background-color: #f8fafc !important; -webkit-print-color-adjust: exact; }
-            .text-center { text-align: center; }
-            .text-right { text-align: right; }
-            .text-left { text-align: left; }
+            .govt-table th { font-weight: bold; background-color: #f8fafc !important; -webkit-print-color-adjust: exact; }
+            .text-left { text-align: left !important; }
+            .text-right { text-align: right !important; }
             
             .sig-block { margin-top: 40px; display: flex; justify-content: space-between; page-break-inside: avoid; }
             .sig-line { border-top: 1px solid #000; width: 150px; text-align: center; padding-top: 5px; font-size: 12px; font-weight: bold;}
@@ -45,6 +43,10 @@
 
         .tab-active { border-bottom: 3px solid #0ea5e9; color: #0284c7; font-weight: 700; background-color: #f0f9ff; }
         .hide-scroll::-webkit-scrollbar { display: none; }
+        
+        /* Screen UI Tables */
+        .ui-table th, .ui-table td { border: 1px solid #e2e8f0; padding: 8px; font-size: 13px; }
+        .ui-table th { background-color: #f8fafc; font-weight: 600; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -54,7 +56,7 @@
         <div class="p-4 flex justify-between items-center max-w-7xl mx-auto border-b border-slate-100">
             <div>
                 <h1 class="font-bold text-xl text-slate-800"><i class="fa-solid fa-gas-pump text-sky-600 mr-2"></i>POL MANAGEMENT SYSTEM</h1>
-                <p class="text-xs text-slate-500">৯ ইস্ট বেঙ্গল রেজিমেন্ট (Automated MT Branch)</p>
+                <p class="text-xs text-slate-500">৯ ইস্ট বেঙ্গল রেজিমেন্ট <span id="db-status" class="text-emerald-500 font-bold ml-2"><i class="fa-solid fa-circle-nodes"></i> Local Mode</span></p>
             </div>
             <div class="flex gap-2">
                 <button onclick="window.print()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-indigo-700 transition">
@@ -63,10 +65,10 @@
             </div>
         </div>
         <nav class="flex max-w-7xl mx-auto overflow-x-auto hide-scroll">
-            <button onclick="showTab('daily-run')" id="tab-daily-run" class="tab-btn tab-active px-6 py-3 text-slate-600 hover:bg-slate-50 font-semibold whitespace-nowrap"><i class="fa-solid fa-truck-fast mr-2"></i>1. VEHICLE DAILY RUN</button>
-            <button onclick="showTab('vdra-input')" id="tab-vdra-input" class="tab-btn px-6 py-3 text-slate-600 hover:bg-slate-50 font-semibold whitespace-nowrap"><i class="fa-solid fa-keyboard mr-2"></i>2. VDRA এন্ট্রি (Input)</button>
-            <button onclick="showTab('ledger-input')" id="tab-ledger-input" class="tab-btn px-6 py-3 text-slate-600 hover:bg-slate-50 font-semibold whitespace-nowrap"><i class="fa-solid fa-boxes-stacked mr-2"></i>3. LEDGER ইনপুট (স্টক)</button>
-            <button onclick="showTab('reports')" id="tab-reports" class="tab-btn px-6 py-3 text-slate-600 hover:bg-slate-50 font-semibold whitespace-nowrap"><i class="fa-solid fa-file-pdf mr-2"></i>4. অটোমেটেড রিপোর্টস</button>
+            <button onclick="showTab('daily-run')" id="tab-daily-run" class="tab-btn tab-active px-6 py-3 text-slate-600 hover:bg-slate-50 font-semibold whitespace-nowrap"><i class="fa-solid fa-gauge-high mr-2"></i>1. VEHICLE DAILY RUN</button>
+            <button onclick="showTab('vdra-input')" id="tab-vdra-input" class="tab-btn px-6 py-3 text-slate-600 hover:bg-slate-50 font-semibold whitespace-nowrap"><i class="fa-solid fa-route mr-2"></i>2. VDRA এন্ট্রি</button>
+            <button onclick="showTab('reports')" id="tab-reports" class="tab-btn px-6 py-3 text-slate-600 hover:bg-slate-50 font-semibold whitespace-nowrap"><i class="fa-solid fa-file-pdf mr-2"></i>3. রিপোর্টস (PDF)</button>
+            <button onclick="showTab('settings')" id="tab-settings" class="tab-btn px-6 py-3 text-slate-600 hover:bg-slate-50 font-semibold whitespace-nowrap"><i class="fa-solid fa-gear mr-2"></i>4. সেটিংস (Setup)</button>
         </nav>
     </div>
 
@@ -74,55 +76,49 @@
     <div class="p-4 max-w-7xl mx-auto w-full flex-grow print-hide">
 
         <!-- ==========================================
-             1. VEHICLE DAILY RUN (Live Monitoring)
+             1. VEHICLE DAILY RUN (Monitoring)
              ========================================== -->
         <section id="sec-daily-run" class="form-section block">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-200 pb-2">
+            <div class="mb-4 flex justify-between items-end border-b border-slate-200 pb-2">
                 <div>
-                    <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-satellite-dish text-red-500 mr-2 animate-pulse"></i>VEHICLE DAILY RUN (লাইভ মনিটরিং)</h2>
-                    <p class="text-sm text-slate-500">গাড়ি ডিউটিতে গেলে এখানে রাফ এন্ট্রি রাখুন। দিনশেষে এটি VDRA-তে ফাইনাল এন্ট্রি দিন।</p>
+                    <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-truck-fast text-sky-600 mr-2"></i>দৈনিক কিলোমিটার রিডিং</h2>
+                    <p class="text-sm text-slate-500">গাড়ি অনুযায়ী প্রতিদিনের কিলোমিটার ও তেলের হিসাব</p>
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Add Run Form -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                    <h3 class="font-bold text-slate-700 mb-3 border-b pb-2">নতুন মুভমেন্ট এন্ট্রি</h3>
-                    <form class="space-y-3" onsubmit="event.preventDefault(); alert('মুভমেন্ট যোগ করা হয়েছে');">
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">বিএ নং</label><input type="text" placeholder="যেমন: BA-1234" class="w-full px-3 py-2 bg-slate-50 border rounded-lg"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">গন্তব্য</label><input type="text" placeholder="যেমন: রামু" class="w-full px-3 py-2 bg-slate-50 border rounded-lg"></div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="block text-xs font-bold text-slate-500 mb-1">বাহিরের সময়</label><input type="time" class="w-full px-3 py-2 bg-slate-50 border rounded-lg"></div>
-                            <div><label class="block text-xs font-bold text-slate-500 mb-1">ড্রাইভারের নাম</label><input type="text" class="w-full px-3 py-2 bg-slate-50 border rounded-lg"></div>
-                        </div>
-                        <button class="w-full bg-slate-800 text-white font-bold py-2 rounded-lg mt-2">ডিউটি স্টার্ট</button>
-                    </form>
-                </div>
-                <!-- Active Runs Board -->
-                <div class="md:col-span-2 bg-slate-100 p-5 rounded-xl border border-slate-200">
-                    <h3 class="font-bold text-slate-700 mb-3"><i class="fa-solid fa-truck-moving text-sky-500 mr-2"></i>বর্তমানে ডিউটিরত গাড়ি</h3>
-                    <div class="space-y-3">
-                        <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-sky-500 flex justify-between items-center">
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-lg">BA-5678 <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500 font-normal ml-2">৩ টন</span></h4>
-                                <p class="text-sm text-slate-600 mt-1"><i class="fa-solid fa-location-dot text-red-400 mr-1"></i> <strong>গন্তব্য:</strong> কক্সবাজার | <i class="fa-regular fa-clock text-slate-400 ml-2 mr-1"></i> <strong>সময়:</strong> ০৬০০</p>
-                            </div>
-                            <button class="bg-emerald-100 text-emerald-700 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded font-bold text-xs transition">VDRA-তে পাঠান <i class="fa-solid fa-arrow-right ml-1"></i></button>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-amber-500 flex justify-between items-center">
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-lg">BA-9012 <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500 font-normal ml-2">জীপ</span></h4>
-                                <p class="text-sm text-slate-600 mt-1"><i class="fa-solid fa-location-dot text-red-400 mr-1"></i> <strong>গন্তব্য:</strong> হেডকোয়ার্টার | <i class="fa-regular fa-clock text-slate-400 ml-2 mr-1"></i> <strong>সময়:</strong> ০৮৩০</p>
-                            </div>
-                            <button class="bg-emerald-100 text-emerald-700 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded font-bold text-xs transition">VDRA-তে পাঠান <i class="fa-solid fa-arrow-right ml-1"></i></button>
-                        </div>
-                    </div>
-                </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                <table class="ui-table w-full text-center">
+                    <thead>
+                        <tr>
+                            <th>বিএ নং</th>
+                            <th>মাসের শুরুতে কিঃমিঃ</th>
+                            <th>মাসের চালিত কিঃ মিঃ</th>
+                            <th>ভিডিআরএ কিঃ মিঃ</th>
+                            <th>গাড়ীর কিঃ মিঃ</th>
+                            <th>দৈনিক চালিত কিঃ মিঃ</th>
+                            <th>তৈল খরচ (Ltr)</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="daily-run-tbody">
+                        <!-- Dynamic Data -->
+                        <tr>
+                            <td class="font-bold">BA-1234</td>
+                            <td>১১৬৭৫৯</td>
+                            <td>১৪৮৫</td>
+                            <td>১১৮২৪৪</td>
+                            <td><input type="number" value="118312" class="w-24 px-2 py-1 border rounded text-center"></td>
+                            <td class="font-bold text-emerald-600">৬৮</td>
+                            <td class="font-bold text-red-500">৯.০৭</td>
+                            <td><button class="bg-sky-100 text-sky-700 px-3 py-1 rounded text-xs font-bold hover:bg-sky-500 hover:text-white transition">Update</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
         <!-- ==========================================
-             2. VDRA ENTRY (The Core Input)
+             2. VDRA ENTRY (Core Input)
              ========================================== -->
         <section id="sec-vdra-input" class="form-section hidden">
             <div class="mb-4 border-b border-slate-200 pb-2">
@@ -130,114 +126,124 @@
                 <p class="text-sm text-slate-500">এখানকার ইনপুট থেকেই স্বয়ংক্রিয়ভাবে ভাউচার, লেজার এবং ৩০২০ রিপোর্ট তৈরি হবে।</p>
             </div>
 
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6">
-                <h3 class="font-bold text-slate-700 mb-3 border-b pb-2 text-sm"><i class="fa-solid fa-gear text-slate-400 mr-2"></i>গাড়ির প্রাথমিক/মাসিক সেটআপ (১-৫ ও ১৩ নং ফিল্ড)</h3>
-                <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">১. বিএ নং</label><input type="text" value="BA-060204" class="w-full px-2 py-1.5 bg-slate-50 border rounded text-sm font-bold"></div>
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">২. প্রকার</label><input type="text" value="পিকআপ" class="w-full px-2 py-1.5 bg-slate-50 border rounded text-sm"></div>
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">৩. শুরুর কি.মি</label><input type="number" value="116759" class="w-full px-2 py-1.5 bg-slate-50 border rounded text-sm"></div>
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">৪. মাস</label><input type="text" value="জুলাই" class="w-full px-2 py-1.5 bg-slate-50 border rounded text-sm"></div>
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">৫. বছর</label><input type="text" value="২০২৬" class="w-full px-2 py-1.5 bg-slate-50 border rounded text-sm"></div>
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">১৩. শুরুর মজুদ (ফুয়েল)</label><input type="number" value="82" class="w-full px-2 py-1.5 bg-slate-50 border rounded text-sm font-bold text-blue-600"></div>
-                </div>
-            </div>
-
-            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
-                <h3 class="font-bold text-slate-700 mb-3 border-b border-slate-200 pb-2 text-sm"><i class="fa-solid fa-route text-sky-500 mr-2"></i>দৈনিক ডিউটি ও POL গ্রহণ এন্ট্রি</h3>
+            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 max-w-4xl mx-auto">
                 <form class="space-y-4">
-                    <!-- Routine -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">৬. তারিখ</label><input type="date" class="w-full px-3 py-2 border rounded-lg bg-white"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">৭. প্রাধিকার</label><input type="text" value="জিএস-০৬৩৫" class="w-full px-3 py-2 border rounded-lg bg-white"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">৮. শুরুর স্থান</label><input type="text" value="এমটি ৯ ইবি" class="w-full px-3 py-2 border rounded-lg bg-white"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">৯. বাহিরের সময়</label><input type="text" placeholder="০৬০০" class="w-full px-3 py-2 border rounded-lg bg-white"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">১০. গন্তব্য স্থান</label><input type="text" class="w-full px-3 py-2 border rounded-lg bg-white"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">১১. আগমনের সময়</label><input type="text" placeholder="১৮০০" class="w-full px-3 py-2 border rounded-lg bg-white"></div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">১২. কোন খাতে চলাচল</label>
-                            <select class="w-full px-3 py-2 border rounded-lg bg-white">
-                                <option value="প্রশিক্ষণ">প্রশিক্ষণ</option>
-                                <option value="প্রশাসনিক">প্রশাসনিক</option>
-                                <option value="চিত্ত বিনোদন">চিত্ত বিনোদন</option>
-                                <option value="অন্যান্য">অন্যান্য</option>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">তারিখ</label><input type="date" class="w-full px-3 py-2 border rounded bg-white"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">গাড়ি (BA No)</label>
+                            <select id="vdra-veh-select" class="w-full px-3 py-2 border rounded bg-white">
+                                <option>BA-1234 (পিকআপ)</option>
                             </select>
                         </div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">মোট কি.মি চলেছে</label><input type="number" placeholder="KM" class="w-full px-3 py-2 border rounded-lg bg-white font-bold text-emerald-600"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">প্রাধিকার</label><input type="text" value="জিএস-০৬৩৫" class="w-full px-3 py-2 border rounded bg-white"></div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">কোন খাতে চলাচল</label>
+                            <select class="w-full px-3 py-2 border rounded bg-white">
+                                <option>প্রশিক্ষণ</option>
+                                <option>প্রশাসনিক</option>
+                                <option>অপস</option>
+                                <option>অন্যান্য</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">ভ্রমণের বিবরণ / রুট</label><input type="text" placeholder="যেমন: রাবার বাগান" class="w-full px-3 py-2 border rounded bg-white"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">বাহিরের সময়</label><input type="text" placeholder="০৬০০" class="w-full px-3 py-2 border rounded bg-white"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">আগমনের সময়</label><input type="text" placeholder="১৮০০" class="w-full px-3 py-2 border rounded bg-white"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">শুরুর মিটার</label><input type="number" placeholder="KM" class="w-full px-3 py-2 border rounded bg-white font-bold"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">শেষের মিটার</label><input type="number" placeholder="KM" class="w-full px-3 py-2 border rounded bg-white font-bold"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">মোট কি.মি চলেছে</label><input type="number" readonly class="w-full px-3 py-2 border border-emerald-300 rounded bg-emerald-50 font-bold text-emerald-700"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">তেল খরচ (অটো)</label><input type="number" readonly class="w-full px-3 py-2 border border-red-300 rounded bg-red-50 font-bold text-red-600"></div>
                     </div>
 
-                    <!-- POL Items (14 to 21) -->
+                    <!-- Dynamic POL Items Receiving -->
                     <div class="mt-4 pt-3 border-t border-slate-200">
                         <h4 class="text-xs font-bold text-slate-600 mb-3 uppercase"><i class="fa-solid fa-droplet text-blue-400 mr-1"></i>POL গ্রহণ (যদি থাকে)</h4>
-                        <div class="grid grid-cols-3 md:grid-cols-8 gap-2">
-                            <div><label class="block text-[10px] font-bold text-slate-500 mb-1">১৪. ফুয়েল (Ltr)</label><input type="number" placeholder="0" class="w-full px-2 py-1.5 border rounded bg-white text-sm"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 mb-1">১৫. কেটু</label><input type="number" placeholder="0" class="w-full px-2 py-1.5 border rounded bg-white text-sm"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 mb-1">১৬. ইঞ্জিন অয়েল</label><input type="number" placeholder="0" class="w-full px-2 py-1.5 border rounded bg-white text-sm"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 mb-1">১৭. ট্রান্সমিশন অয়েল</label><input type="number" placeholder="0" class="w-full px-2 py-1.5 border rounded bg-white text-sm"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 mb-1">১৮. ব্রেক ফ্লুইড</label><input type="number" placeholder="0" class="w-full px-2 py-1.5 border rounded bg-white text-sm"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 mb-1">১৯. গ্রিজ</label><input type="number" placeholder="0" class="w-full px-2 py-1.5 border rounded bg-white text-sm"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 mb-1">২০. এটিএফ</label><input type="number" placeholder="0" class="w-full px-2 py-1.5 border rounded bg-white text-sm"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 mb-1">২১. কুল্যান্ট</label><input type="number" placeholder="0" class="w-full px-2 py-1.5 border rounded bg-white text-sm"></div>
+                        <div id="dynamic-pol-inputs" class="grid grid-cols-3 md:grid-cols-6 gap-2">
+                            <!-- Injected by JS based on Settings -->
                         </div>
                     </div>
                     
-                    <button type="button" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg mt-2 hover:bg-emerald-700 transition">VDRA রেকর্ড সেভ করুন</button>
+                    <button type="button" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg mt-4 hover:bg-emerald-700 transition shadow">VDRA রেকর্ড সেভ করুন</button>
                 </form>
             </div>
         </section>
 
         <!-- ==========================================
-             3. LEDGER INPUT (Stock Additions)
-             ========================================== -->
-        <section id="sec-ledger-input" class="form-section hidden">
-            <div class="mb-4 border-b border-slate-200 pb-2">
-                <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-boxes-stacked text-blue-600 mr-2"></i>লেজার স্টক ইনপুট</h2>
-                <p class="text-sm text-slate-500">সেনাসদর বা SSD হতে নতুন POL রিসিভ করলে এখানে এন্ট্রি দিন।</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 max-w-2xl mx-auto">
-                <form class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label class="block text-sm font-bold text-slate-600 mb-1">তারিখ</label><input type="date" class="w-full px-3 py-2 bg-slate-50 border rounded-lg"></div>
-                        <div><label class="block text-sm font-bold text-slate-600 mb-1">ভাউচার/রেফারেন্স নং</label><input type="text" placeholder="যেমন: RV-102" class="w-full px-3 py-2 bg-slate-50 border rounded-lg"></div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-600 mb-1">POL ক্যাটাগরি (১১ আইটেম)</label>
-                        <select class="w-full px-3 py-2 bg-slate-50 border rounded-lg">
-                            <option>১। ডিজেল</option>
-                            <option>২। পেট্রোল</option>
-                            <option>৩। কেটু</option>
-                            <option>৪। HD-30 (ইঞ্জিন অয়েল)</option>
-                            <option>৫। GX-90</option>
-                            <option>৬। গ্রিজ</option>
-                            <option>৭। এটিএফ</option>
-                            <option>৮। 15w40</option>
-                            <option>৯। 80w90</option>
-                            <option>১০। কুল্যান্ট</option>
-                            <option>১১। ব্রেক ফ্লুইড</option>
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label class="block text-sm font-bold text-slate-600 mb-1">গ্রহণের পরিমাণ (Receipt In)</label><input type="number" class="w-full px-3 py-2 bg-slate-50 border rounded-lg font-bold text-emerald-600 text-lg"></div>
-                        <div><label class="block text-sm font-bold text-slate-600 mb-1">একক</label><input type="text" value="লিটার/কেজি" disabled class="w-full px-3 py-2 bg-slate-100 border rounded-lg text-slate-400"></div>
-                    </div>
-                    <button type="button" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow-md hover:bg-blue-700 transition">স্টক লেজারে যোগ করুন</button>
-                </form>
-            </div>
-        </section>
-
-        <!-- ==========================================
-             4. REPORTS VIEW (Pre-Print View)
+             3. REPORTS VIEW (Pre-Print View)
              ========================================== -->
         <section id="sec-reports" class="form-section hidden">
-            <div class="flex gap-2 mb-6">
-                <button onclick="showReport('rep-vdra')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded font-bold text-sm">VDRA কার্ড</button>
-                <button onclick="showReport('rep-voucher')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded font-bold text-sm">POL ভাউচার</button>
-                <button onclick="showReport('rep-ledger')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded font-bold text-sm">মাস্টার লেজার</button>
-                <button onclick="showReport('rep-3020')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded font-bold text-sm">3020 রিপোর্ট</button>
+            <div class="mb-4 border-b border-slate-200 pb-2">
+                <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-print text-indigo-600 mr-2"></i>অটোমেটেড রিপোর্ট জেনারেটর</h2>
             </div>
             
-            <div class="p-6 bg-white border border-dashed border-slate-300 rounded-xl min-h-[500px] flex items-center justify-center text-slate-400">
-                <p><i class="fa-solid fa-print text-2xl mb-2 block text-center"></i>উপরের বাটনগুলো থেকে রিপোর্ট সিলেক্ট করুন। এগুলো প্রিন্টের সময় হুবহু সরকারি ফর্মে দেখা যাবে।</p>
+            <div class="flex flex-wrap gap-3 mb-6">
+                <button onclick="showReportPreview('rep-vdra', 'Legal Landscape')" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow hover:bg-slate-700"><i class="fa-solid fa-route mr-2"></i>VDRA কার্ড</button>
+                <button onclick="showReportPreview('rep-voucher', 'A4 Portrait')" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow hover:bg-slate-700"><i class="fa-solid fa-receipt mr-2"></i>POL ভাউচার</button>
+                <button onclick="showReportPreview('rep-ledger', 'Legal Landscape')" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow hover:bg-slate-700"><i class="fa-solid fa-book-open mr-2"></i>মাস্টার লেজার</button>
+                <button onclick="showReportPreview('rep-3020', 'A4 Portrait')" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow hover:bg-slate-700"><i class="fa-solid fa-file-contract mr-2"></i>3020 রিপোর্ট</button>
+            </div>
+            
+            <div class="p-2 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg text-sm font-bold mb-4 hidden" id="print-instruction">
+                <i class="fa-solid fa-circle-info mr-2"></i>প্রিন্ট করার সময় পেপার সাইজ: <span id="paper-size-text" class="text-red-600">A4 Portrait</span> সিলেক্ট করবেন।
+            </div>
+            
+            <div class="p-6 bg-white border border-slate-300 rounded-xl min-h-[500px] overflow-auto shadow-inner" id="preview-box">
+                <p class="text-slate-400 text-center mt-20"><i class="fa-solid fa-arrow-pointer text-2xl mb-2 block"></i>উপরের বাটনগুলো থেকে রিপোর্ট সিলেক্ট করুন।</p>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             4. SETTINGS (Dynamic Inputs)
+             ========================================== -->
+        <section id="sec-settings" class="form-section hidden">
+            <div class="mb-4 border-b border-slate-200 pb-2">
+                <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-gears text-purple-600 mr-2"></i>সিস্টেম সেটআপ</h2>
+                <p class="text-sm text-slate-500">এখান থেকে নতুন গাড়ি, গাড়ির ধরন এবং তেলের ক্যাটাগরি যুক্ত করুন।</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Vehicle Types -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-700 mb-3 border-b pb-2"><i class="fa-solid fa-tags text-sky-500 mr-2"></i>গাড়ির ধরন</h3>
+                    <div class="flex gap-2 mb-3">
+                        <input type="text" id="set-vtype" placeholder="যেমন: পিকআপ, ৩ টন" class="w-full px-3 py-2 bg-slate-50 border rounded text-sm">
+                        <button class="bg-slate-800 text-white px-3 py-2 rounded font-bold hover:bg-slate-700"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <ul class="space-y-2 text-sm font-semibold text-slate-600" id="list-vtype">
+                        <li class="flex justify-between bg-slate-50 p-2 rounded"><span>পিকআপ</span> <i class="fa-solid fa-trash text-red-400 cursor-pointer"></i></li>
+                        <li class="flex justify-between bg-slate-50 p-2 rounded"><span>৩ টন</span> <i class="fa-solid fa-trash text-red-400 cursor-pointer"></i></li>
+                        <li class="flex justify-between bg-slate-50 p-2 rounded"><span>জিপ</span> <i class="fa-solid fa-trash text-red-400 cursor-pointer"></i></li>
+                    </ul>
+                </div>
+
+                <!-- POL Categories -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-700 mb-3 border-b pb-2"><i class="fa-solid fa-droplet text-amber-500 mr-2"></i>POL ক্যাটাগরি</h3>
+                    <div class="flex gap-2 mb-3">
+                        <input type="text" id="set-poltype" placeholder="যেমন: ব্রেক ফ্লুইড" class="w-full px-3 py-2 bg-slate-50 border rounded text-sm">
+                        <button class="bg-slate-800 text-white px-3 py-2 rounded font-bold hover:bg-slate-700"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <ul class="space-y-2 text-sm font-semibold text-slate-600 max-h-48 overflow-y-auto" id="list-poltype">
+                        <!-- Filled by JS -->
+                    </ul>
+                </div>
+
+                <!-- Vehicles -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 md:col-span-3">
+                    <h3 class="font-bold text-slate-700 mb-3 border-b pb-2"><i class="fa-solid fa-truck text-emerald-500 mr-2"></i>যানবাহন তালিকা</h3>
+                    <form class="flex flex-wrap gap-3 mb-4 items-end bg-slate-50 p-4 rounded-lg border border-slate-100">
+                        <div class="flex-1 min-w-[120px]"><label class="block text-xs font-bold text-slate-500 mb-1">BA No</label><input type="text" class="w-full px-3 py-2 border rounded"></div>
+                        <div class="flex-1 min-w-[120px]"><label class="block text-xs font-bold text-slate-500 mb-1">Type</label><select class="w-full px-3 py-2 border rounded"><option>পিকআপ</option></select></div>
+                        <div class="flex-1 min-w-[100px]"><label class="block text-xs font-bold text-slate-500 mb-1">KPL</label><input type="number" step="0.1" class="w-full px-3 py-2 border rounded"></div>
+                        <div class="flex-1 min-w-[120px]"><label class="block text-xs font-bold text-slate-500 mb-1">Start Km</label><input type="number" class="w-full px-3 py-2 border rounded"></div>
+                        <button type="button" class="bg-emerald-600 text-white px-4 py-2 rounded font-bold shadow hover:bg-emerald-700 h-[42px]">যুক্ত করুন</button>
+                    </form>
+                    <table class="ui-table w-full text-center">
+                        <thead><tr><th>BA No</th><th>Type</th><th>KPL</th><th>Start Km</th><th>Action</th></tr></thead>
+                        <tbody>
+                            <tr><td class="font-bold">BA-1234</td><td>পিকআপ</td><td>৭.৫</td><td>১১৬৭৫৯</td><td><i class="fa-solid fa-trash text-red-500 cursor-pointer"></i></td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -248,17 +254,16 @@
          ========================================== -->
     <div id="print-area" class="hidden print:block bg-white text-black">
         
-        <!-- REPORT: VDRA (Legal Landscape) -->
-        <div id="rep-vdra" class="report-template block">
-            <div class="text-center mb-4">
+        <!-- 1. VDRA REPORT -->
+        <div id="rep-vdra" class="report-template hidden">
+            <div class="text-center mb-2">
                 <h2 class="text-lg font-bold underline mb-1">গাড়ীর পিওএল এর হিসাব বিবরণী</h2>
-                <p class="text-sm font-bold">২০২৬ ইং সালে জুলাই মাসের</p>
-                <div class="text-left text-xs font-bold mt-2">
+                <p class="text-xs font-bold">২০২৬ ইং সালে জুলাই মাসের</p>
+                <div class="text-left text-xs font-bold mt-1">
                     <p>গাড়ীর বিএনং: ০৬০২০৪</p>
                     <p>গাড়ীর ধরণ: পিকআপ</p>
                 </div>
             </div>
-            <!-- Generating dense 28+ column table mapping to Excel -->
             <table class="govt-table text-center" style="font-size: 9px;">
                 <thead>
                     <tr>
@@ -295,13 +300,6 @@
                         <td>১১৬৭৫৯</td><td>১১৬৮৭৯</td><td>৮২</td><td>-</td><td>৬৬</td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr>
-                        <td>২</td><td>০৬-০৭</td><td>জিএস-০৬৩৫</td><td>এমটি ৯ ইবি</td><td>০৬০০</td><td>রাবার বাগান</td><td>১৮০০</td>
-                        <td>৭৫</td><td>১০</td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td>১১৬৮৭৯</td><td>১১৬৯৫৪</td><td>৬৬</td><td>৫৬</td><td>১১২</td>
-                        <td></td><td></td><td></td><td></td>
-                    </tr>
-                    <!-- More rows injected dynamically -->
                 </tbody>
             </table>
             <div class="mt-4 flex justify-between text-xs font-bold w-1/2">
@@ -311,7 +309,7 @@
             <div class="sig-block"><div class="sig-line mx-auto">এমটিও স্বাক্ষর</div></div>
         </div>
 
-        <!-- REPORT: POL VOUCHER (A4 Portrait) -->
+        <!-- 2. POL VOUCHER (A4 Portrait) -->
         <div id="rep-voucher" class="report-template hidden">
             <div class="flex justify-between items-start mb-4 text-xs font-bold">
                 <div><p>আইভি/এমটি/৯৬৭৯/২</p></div>
@@ -325,21 +323,20 @@
                 <thead>
                     <tr>
                         <th class="w-20">গাড়ীর বিএ নং</th>
-                        <th>ডিজেল</th><th>পেট্রোল</th><th>ইঞ্জিন অয়েল</th><th>গ্রীজ</th><th>ব্রেক ফ্লুইড</th><th>স্বাক্ষর</th>
+                        <th>ডিজেল</th><th>পেট্রোল</th><th>কেটু</th><th>এইচডি-৩০</th><th>জিএক্স-৯০</th><th>ব্রেক ফ্লুইড</th><th>গ্রীজ</th><th>কুলেন্ট</th><th>এটিএফ</th><th>স্বাক্ষর</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>০৩৪৭৯২</td><td class="font-bold">৪৬</td><td></td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>০৬০৩৬৫</td><td class="font-bold">৮১</td><td></td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>০৫৯৭১০</td><td class="font-bold">২৫</td><td></td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>০৫৭৭৭৩</td><td class="font-bold">৬০</td><td></td><td></td><td></td><td></td><td></td></tr>
-                    <tr class="font-bold bg-slate-50"><td class="text-right">মোটঃ</td><td>২৫২</td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td class="font-bold">০৩৪৭৯২</td><td class="font-bold">৪৬</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td class="font-bold">০৬০৩৬৫</td><td class="font-bold">৮১</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td class="font-bold">০৫৯৭১০</td><td class="font-bold">২৫</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr class="font-bold bg-slate-50"><td class="text-right">মোটঃ</td><td>১৫২</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                 </tbody>
             </table>
             <div class="flex justify-between text-sm font-bold mt-4"><p>তারিখঃ ০২-০৭-২০২৬</p></div>
         </div>
 
-        <!-- REPORT: LEDGER (Legal Landscape) -->
+        <!-- 3. LEDGER (Legal Landscape) -->
         <div id="rep-ledger" class="report-template hidden">
             <div class="flex justify-between items-end mb-4">
                 <div class="text-sm font-bold border border-black p-2">দ্রব্যঃ ডিজেল<br>ওজনঃ লিটার</div>
@@ -349,68 +346,156 @@
             <table class="govt-table text-center">
                 <thead>
                     <tr>
-                        <th>তারিখ</th><th>রশিদ নং</th><th class="text-left w-1/3">কাহার নিকট হইতে গ্রহণ / কাহাকে বিতরণ</th>
-                        <th>গ্রহণ (In)</th><th>বিতরণ (Out)</th><th>উদ্বৃত্ত (Balance)</th><th>স্বাক্ষর</th>
+                        <th class="w-24">তারিখ ও মাস</th>
+                        <th class="w-24">রশিদ নং</th>
+                        <th class="text-left">কাহার নিকট হইতে গ্রহণ অথবা কাহাকে বিতরণ করা হইল</th>
+                        <th class="w-24">গ্রহণ</th>
+                        <th class="w-24">বিতরণ</th>
+                        <th class="w-24">উদ্বৃত্ত</th>
+                        <th class="w-24">স্বাক্ষর</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr><td>০১-০৭-২৬</td><td>-</td><td class="text-left">Opening Balance</td><td></td><td></td><td class="font-bold">৫৭৩.০০০</td><td></td></tr>
                     <tr><td>০২-০৭-২৬</td><td>রামু-(১)</td><td class="text-left">এসএসডি রামু হতে সংগ্রহ</td><td class="font-bold">১৪০০.০০০</td><td></td><td class="font-bold">১৯৭৩.০০০</td><td></td></tr>
-                    <tr><td>০২-০৭-২৬</td><td>৯৬৭৯/২</td><td class="text-left">ইউনিট গাড়ীতে বিতরণ (অটো)</td><td></td><td class="font-bold text-red-600">২৫২.০০০</td><td class="font-bold">১৭২১.০০০</td><td></td></tr>
+                    <tr><td>০২-০৭-২৬</td><td>৯৬৭৯/২</td><td class="text-left">ইউনিট গাড়ীতে বিতরণ</td><td></td><td class="font-bold text-red-600">২৫২.০০০</td><td class="font-bold">১৭২১.০০০</td><td></td></tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- REPORT: 3020 (A4 Portrait) -->
+        <!-- 4. 3020 REPORT (A4 Portrait) -->
         <div id="rep-3020" class="report-template hidden">
-            <div class="text-center mb-6"><h2 class="text-lg font-bold underline">মাসিক তৈল খরচের বিবরণী</h2><p class="text-sm font-bold">তারিখঃ জুলাই ২০২৬</p></div>
+            <div class="text-center mb-4">
+                <h2 class="text-lg font-bold underline">মাসিক তৈল খরচের বিবরণী</h2>
+                <p class="text-sm font-bold">তারিখঃ জুলাই ২০২৬</p>
+            </div>
             <table class="govt-table text-center" style="font-size: 10px;">
                 <thead>
                     <tr>
-                        <th rowspan="2">বিএ নং</th><th rowspan="2">প্রকার</th>
-                        <th colspan="2">প্রশিক্ষণ</th><th colspan="2">প্রশাসনিক</th><th colspan="2">মোট</th>
+                        <th rowspan="2">বিএ নং</th>
+                        <th rowspan="2">গাড়ীর প্রকার</th>
+                        <th colspan="3">প্রশিক্ষণ বিবরণ</th>
+                        <th colspan="3">প্রশাসনিক বিবরণ</th>
+                        <th colspan="3">অপস বিবরণ</th>
+                        <th colspan="3">মোট</th>
                         <th rowspan="2">ভিডিআরএ কিঃ মিঃ</th>
+                        <th rowspan="2">মন্তব্য</th>
                     </tr>
-                    <tr><th>লিঃ</th><th>কিঃমিঃ</th><th>লিঃ</th><th>কিঃমিঃ</th><th>লিঃ</th><th>কিঃমিঃ</th></tr>
+                    <tr>
+                        <th>লিঃ</th><th>কিঃমিঃ</th><th>দিন</th>
+                        <th>লিঃ</th><th>কিঃমিঃ</th><th>দিন</th>
+                        <th>লিঃ</th><th>কিঃমিঃ</th><th>দিন</th>
+                        <th>লিঃ</th><th>কিঃমিঃ</th><th>দিন</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    <tr><td colspan="9" class="text-left font-bold bg-slate-50">পিকআপ</td></tr>
-                    <tr><td>০৬০২০৪</td><td>পিকআপ</td><td>১৩৮</td><td>৪৫০</td><td>১০৩৫</td><td></td><td>১৪৮৫</td><td>১৯৮</td><td>১১৮২৪৪</td></tr>
+                    <tr><td colspan="16" class="text-left font-bold bg-slate-50">পিকআপ</td></tr>
+                    <tr>
+                        <td class="font-bold">০৬০২০৪</td><td>পিকআপ</td>
+                        <td>১৩৮</td><td>৪৫০</td><td>১২</td>
+                        <td>৬০</td><td>১৪৮৫</td><td>৭</td>
+                        <td></td><td></td><td></td>
+                        <td>১৯৮</td><td>১৯৩৫</td><td>১৯</td>
+                        <td class="font-bold">১১৮২৪৪</td><td></td>
+                    </tr>
                 </tbody>
             </table>
-            <div class="mt-8 flex gap-10 text-sm">
-                <table class="govt-table w-1/2"><tr><th colspan="2">তেল খরচ</th></tr><tr><td>প্রশিক্ষণঃ</td><td class="font-bold text-right">১২২৪</td></tr><tr><td>প্রশাসনিকঃ</td><td class="font-bold text-right">১৫৯২</td></tr><tr><td class="font-bold">মোটঃ</td><td class="font-bold text-right">২৮১৬</td></tr></table>
+            <div class="mt-8 flex gap-10 text-xs">
+                <table class="govt-table w-1/2">
+                    <tr><th colspan="2">তেল খরচ</th></tr>
+                    <tr><td class="text-left">প্রশিক্ষণঃ</td><td class="font-bold text-right">১২২৪</td></tr>
+                    <tr><td class="text-left">প্রশাসনিকঃ</td><td class="font-bold text-right">১৫৯২</td></tr>
+                    <tr><td class="text-left font-bold">মোটঃ</td><td class="font-bold text-right">২৮১৬</td></tr>
+                </table>
             </div>
         </div>
 
     </div>
 
-    <!-- JS Logic -->
-    <script>
-        function showTab(tabId) {
+    <!-- Logic & Firebase Setup -->
+    <script type="module">
+        // ==========================================
+        // 1. FIREBASE CONFIGURATION (Replace with your actual keys)
+        // ==========================================
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Uncomment below to activate Firebase once config is set
+        /*
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        document.getElementById('db-status').innerHTML = '<i class="fa-solid fa-cloud"></i> Live Sync';
+        */
+
+        // ==========================================
+        // 2. DYNAMIC STATE MANAGEMENT (Local Fallback)
+        // ==========================================
+        const defaultPolItems = ['ডিজেল', 'পেট্রোল', 'কেটু', 'এইচডি-৩০', 'জিএক্স-৯০', 'ব্রেক ফ্লুইড', 'গ্রীজ', 'কুলেন্ট', 'এটিএফ', 'ইঞ্জিন অয়েল', 'ট্রান্সমিশন অয়েল'];
+        
+        // Populate Dynamic Lists in UI
+        function renderSettings() {
+            // Render POL Items in Settings
+            const polList = document.getElementById('list-poltype');
+            polList.innerHTML = defaultPolItems.map(item => `
+                <li class="flex justify-between bg-slate-50 p-2 rounded border border-slate-100">
+                    <span>${item}</span> <i class="fa-solid fa-trash text-red-400 cursor-pointer"></i>
+                </li>
+            `).join('');
+
+            // Render POL inputs in VDRA form dynamically
+            const vdraPolInputs = document.getElementById('dynamic-pol-inputs');
+            vdraPolInputs.innerHTML = defaultPolItems.map(item => `
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 mb-1 truncate" title="${item}">${item}</label>
+                    <input type="number" placeholder="0" class="w-full px-2 py-1.5 border rounded bg-white text-sm">
+                </div>
+            `).join('');
+        }
+
+        renderSettings();
+
+        // ==========================================
+        // 3. UI TAB & PRINT CONTROL
+        // ==========================================
+        window.showTab = function(tabId) {
             document.querySelectorAll('.form-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('sec-' + tabId).classList.remove('hidden');
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('tab-active'));
             document.getElementById('tab-' + tabId).classList.add('tab-active');
-        }
+        };
 
-        // Handle Print Previews inside the App
-        function showReport(repId) {
-            // First hide all templates in print area
+        window.showReportPreview = function(repId, paperSize) {
+            // Hide all print templates
             document.querySelectorAll('.report-template').forEach(el => {
                 el.classList.remove('block');
                 el.classList.add('hidden');
             });
-            // Show selected
+            // Show selected template in hidden print area
             document.getElementById(repId).classList.remove('hidden');
             document.getElementById(repId).classList.add('block');
             
-            // Render it visible on screen momentarily for preview inside the box
-            const previewBox = document.querySelector('#sec-reports > div:last-child');
+            // Show instruction
+            document.getElementById('print-instruction').classList.remove('hidden');
+            document.getElementById('paper-size-text').innerText = paperSize;
+            
+            // Render visible preview inside the preview box
+            const previewBox = document.getElementById('preview-box');
             previewBox.innerHTML = document.getElementById(repId).outerHTML;
-            previewBox.querySelector('.report-template').classList.remove('hidden');
-            previewBox.querySelector('.report-template').classList.add('block');
-        }
+            
+            // Ensure the cloned node is visible in the preview box
+            const clonedTemplate = previewBox.querySelector('.report-template');
+            clonedTemplate.classList.remove('hidden');
+            clonedTemplate.classList.add('block');
+        };
     </script>
 </body>
 </html>
