@@ -28,7 +28,7 @@
             .govt-table th, .govt-table td { 
                 border: 1px solid #000; 
                 padding: 4px; 
-                font-size: 11px; /* Smaller font to fit legal/A4 pages */
+                font-size: 11px;
                 color: #000;
                 word-wrap: break-word;
                 text-align: center;
@@ -56,7 +56,7 @@
         <div class="p-4 flex justify-between items-center max-w-7xl mx-auto border-b border-slate-100">
             <div>
                 <h1 class="font-bold text-xl text-slate-800"><i class="fa-solid fa-gas-pump text-sky-600 mr-2"></i>POL MANAGEMENT SYSTEM</h1>
-                <p class="text-xs text-slate-500">৯ ইস্ট বেঙ্গল রেজিমেন্ট <span id="db-status" class="text-emerald-500 font-bold ml-2"><i class="fa-solid fa-circle-nodes"></i> Local Mode</span></p>
+                <p class="text-xs text-slate-500">৯ ইস্ট বেঙ্গল রেজিমেন্ট <span id="db-status" class="text-slate-400 font-bold ml-2"><i class="fa-solid fa-spinner fa-spin"></i> Connecting...</span></p>
             </div>
             <div class="flex gap-2">
                 <button onclick="window.print()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-indigo-700 transition">
@@ -101,17 +101,7 @@
                         </tr>
                     </thead>
                     <tbody id="daily-run-tbody">
-                        <!-- Dynamic Data -->
-                        <tr>
-                            <td class="font-bold">BA-1234</td>
-                            <td>১১৬৭৫৯</td>
-                            <td>১৪৮৫</td>
-                            <td>১১৮২৪৪</td>
-                            <td><input type="number" value="118312" class="w-24 px-2 py-1 border rounded text-center"></td>
-                            <td class="font-bold text-emerald-600">৬৮</td>
-                            <td class="font-bold text-red-500">৯.০৭</td>
-                            <td><button class="bg-sky-100 text-sky-700 px-3 py-1 rounded text-xs font-bold hover:bg-sky-500 hover:text-white transition">Update</button></td>
-                        </tr>
+                        <tr><td colspan="8" class="text-slate-400 p-4">কোনো ডেটা পাওয়া যায়নি। সেটিংস থেকে গাড়ি যুক্ত করুন।</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -127,42 +117,42 @@
             </div>
 
             <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 max-w-4xl mx-auto">
-                <form class="space-y-4">
+                <form class="space-y-4" id="form-vdra-entry">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">তারিখ</label><input type="date" class="w-full px-3 py-2 border rounded bg-white"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">তারিখ</label><input type="date" id="vdra-date" required class="w-full px-3 py-2 border rounded bg-white"></div>
                         <div><label class="block text-xs font-bold text-slate-500 mb-1">গাড়ি (BA No)</label>
-                            <select id="vdra-veh-select" class="w-full px-3 py-2 border rounded bg-white">
-                                <option>BA-1234 (পিকআপ)</option>
+                            <select id="vdra-veh-select" required class="w-full px-3 py-2 border rounded bg-white">
+                                <option value="">গাড়ি সিলেক্ট করুন</option>
                             </select>
                         </div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">প্রাধিকার</label><input type="text" value="জিএস-০৬৩৫" class="w-full px-3 py-2 border rounded bg-white"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">প্রাধিকার</label><input type="text" id="vdra-auth" class="w-full px-3 py-2 border rounded bg-white"></div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">কোন খাতে চলাচল</label>
-                            <select class="w-full px-3 py-2 border rounded bg-white">
-                                <option>প্রশিক্ষণ</option>
-                                <option>প্রশাসনিক</option>
-                                <option>অপস</option>
-                                <option>অন্যান্য</option>
+                            <select id="vdra-category" required class="w-full px-3 py-2 border rounded bg-white">
+                                <option value="প্রশিক্ষণ">প্রশিক্ষণ</option>
+                                <option value="প্রশাসনিক">প্রশাসনিক</option>
+                                <option value="অপস">অপস</option>
+                                <option value="অন্যান্য">অন্যান্য</option>
                             </select>
                         </div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">ভ্রমণের বিবরণ / রুট</label><input type="text" placeholder="যেমন: রাবার বাগান" class="w-full px-3 py-2 border rounded bg-white"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">বাহিরের সময়</label><input type="text" placeholder="০৬০০" class="w-full px-3 py-2 border rounded bg-white"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">আগমনের সময়</label><input type="text" placeholder="১৮০০" class="w-full px-3 py-2 border rounded bg-white"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">শুরুর মিটার</label><input type="number" placeholder="KM" class="w-full px-3 py-2 border rounded bg-white font-bold"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">শেষের মিটার</label><input type="number" placeholder="KM" class="w-full px-3 py-2 border rounded bg-white font-bold"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">মোট কি.মি চলেছে</label><input type="number" readonly class="w-full px-3 py-2 border border-emerald-300 rounded bg-emerald-50 font-bold text-emerald-700"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">তেল খরচ (অটো)</label><input type="number" readonly class="w-full px-3 py-2 border border-red-300 rounded bg-red-50 font-bold text-red-600"></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">ভ্রমণের বিবরণ / রুট</label><input type="text" id="vdra-route" placeholder="যেমন: রাবার বাগান" required class="w-full px-3 py-2 border rounded bg-white"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">বাহিরের সময়</label><input type="text" id="vdra-time-out" placeholder="০৬০০" class="w-full px-3 py-2 border rounded bg-white"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">আগমনের সময়</label><input type="text" id="vdra-time-in" placeholder="১৮০০" class="w-full px-3 py-2 border rounded bg-white"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">শুরুর মিটার</label><input type="number" id="vdra-km-start" placeholder="KM" required class="w-full px-3 py-2 border rounded bg-white font-bold"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">শেষের মিটার</label><input type="number" id="vdra-km-end" placeholder="KM" required class="w-full px-3 py-2 border rounded bg-white font-bold"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">মোট কি.মি চলেছে</label><input type="number" id="vdra-km-total" readonly class="w-full px-3 py-2 border border-emerald-300 rounded bg-emerald-50 font-bold text-emerald-700"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">তেল খরচ (অটো)</label><input type="number" id="vdra-fuel-cons" readonly class="w-full px-3 py-2 border border-red-300 rounded bg-red-50 font-bold text-red-600"></div>
                     </div>
 
                     <!-- Dynamic POL Items Receiving -->
                     <div class="mt-4 pt-3 border-t border-slate-200">
                         <h4 class="text-xs font-bold text-slate-600 mb-3 uppercase"><i class="fa-solid fa-droplet text-blue-400 mr-1"></i>POL গ্রহণ (যদি থাকে)</h4>
                         <div id="dynamic-pol-inputs" class="grid grid-cols-3 md:grid-cols-6 gap-2">
-                            <!-- Injected by JS based on Settings -->
+                            <p class="text-xs text-slate-400 col-span-full">POL ক্যাটাগরি লোড হচ্ছে...</p>
                         </div>
                     </div>
                     
-                    <button type="button" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg mt-4 hover:bg-emerald-700 transition shadow">VDRA রেকর্ড সেভ করুন</button>
+                    <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg mt-4 hover:bg-emerald-700 transition shadow">VDRA রেকর্ড সেভ করুন</button>
                 </form>
             </div>
         </section>
@@ -205,13 +195,12 @@
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-slate-700 mb-3 border-b pb-2"><i class="fa-solid fa-tags text-sky-500 mr-2"></i>গাড়ির ধরন</h3>
                     <div class="flex gap-2 mb-3">
-                        <input type="text" id="set-vtype" placeholder="যেমন: পিকআপ, ৩ টন" class="w-full px-3 py-2 bg-slate-50 border rounded text-sm">
-                        <button class="bg-slate-800 text-white px-3 py-2 rounded font-bold hover:bg-slate-700"><i class="fa-solid fa-plus"></i></button>
+                        <input type="text" id="input-vtype" placeholder="যেমন: পিকআপ, ৩ টন" class="w-full px-3 py-2 bg-slate-50 border rounded text-sm">
+                        <button id="btn-add-vtype" class="bg-slate-800 text-white px-3 py-2 rounded font-bold hover:bg-slate-700"><i class="fa-solid fa-plus"></i></button>
                     </div>
                     <ul class="space-y-2 text-sm font-semibold text-slate-600" id="list-vtype">
-                        <li class="flex justify-between bg-slate-50 p-2 rounded"><span>পিকআপ</span> <i class="fa-solid fa-trash text-red-400 cursor-pointer"></i></li>
-                        <li class="flex justify-between bg-slate-50 p-2 rounded"><span>৩ টন</span> <i class="fa-solid fa-trash text-red-400 cursor-pointer"></i></li>
-                        <li class="flex justify-between bg-slate-50 p-2 rounded"><span>জিপ</span> <i class="fa-solid fa-trash text-red-400 cursor-pointer"></i></li>
+                        <!-- Loaded from Firebase -->
+                        <li class="text-slate-400 text-center text-xs py-2">লোড হচ্ছে...</li>
                     </ul>
                 </div>
 
@@ -219,28 +208,30 @@
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                     <h3 class="font-bold text-slate-700 mb-3 border-b pb-2"><i class="fa-solid fa-droplet text-amber-500 mr-2"></i>POL ক্যাটাগরি</h3>
                     <div class="flex gap-2 mb-3">
-                        <input type="text" id="set-poltype" placeholder="যেমন: ব্রেক ফ্লুইড" class="w-full px-3 py-2 bg-slate-50 border rounded text-sm">
-                        <button class="bg-slate-800 text-white px-3 py-2 rounded font-bold hover:bg-slate-700"><i class="fa-solid fa-plus"></i></button>
+                        <input type="text" id="input-poltype" placeholder="যেমন: ব্রেক ফ্লুইড" class="w-full px-3 py-2 bg-slate-50 border rounded text-sm">
+                        <button id="btn-add-poltype" class="bg-slate-800 text-white px-3 py-2 rounded font-bold hover:bg-slate-700"><i class="fa-solid fa-plus"></i></button>
                     </div>
                     <ul class="space-y-2 text-sm font-semibold text-slate-600 max-h-48 overflow-y-auto" id="list-poltype">
-                        <!-- Filled by JS -->
+                        <!-- Loaded from Firebase -->
+                        <li class="text-slate-400 text-center text-xs py-2">লোড হচ্ছে...</li>
                     </ul>
                 </div>
 
                 <!-- Vehicles -->
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 md:col-span-3">
                     <h3 class="font-bold text-slate-700 mb-3 border-b pb-2"><i class="fa-solid fa-truck text-emerald-500 mr-2"></i>যানবাহন তালিকা</h3>
-                    <form class="flex flex-wrap gap-3 mb-4 items-end bg-slate-50 p-4 rounded-lg border border-slate-100">
-                        <div class="flex-1 min-w-[120px]"><label class="block text-xs font-bold text-slate-500 mb-1">BA No</label><input type="text" class="w-full px-3 py-2 border rounded"></div>
-                        <div class="flex-1 min-w-[120px]"><label class="block text-xs font-bold text-slate-500 mb-1">Type</label><select class="w-full px-3 py-2 border rounded"><option>পিকআপ</option></select></div>
-                        <div class="flex-1 min-w-[100px]"><label class="block text-xs font-bold text-slate-500 mb-1">KPL</label><input type="number" step="0.1" class="w-full px-3 py-2 border rounded"></div>
-                        <div class="flex-1 min-w-[120px]"><label class="block text-xs font-bold text-slate-500 mb-1">Start Km</label><input type="number" class="w-full px-3 py-2 border rounded"></div>
-                        <button type="button" class="bg-emerald-600 text-white px-4 py-2 rounded font-bold shadow hover:bg-emerald-700 h-[42px]">যুক্ত করুন</button>
+                    <form id="form-add-vehicle" class="flex flex-wrap gap-3 mb-4 items-end bg-slate-50 p-4 rounded-lg border border-slate-100">
+                        <div class="flex-1 min-w-[120px]"><label class="block text-xs font-bold text-slate-500 mb-1">BA No</label><input type="text" id="veh-ba" required class="w-full px-3 py-2 border rounded"></div>
+                        <div class="flex-1 min-w-[120px]"><label class="block text-xs font-bold text-slate-500 mb-1">Type</label><select id="veh-type" required class="w-full px-3 py-2 border rounded"><option value="">সিলেক্ট করুন</option></select></div>
+                        <div class="flex-1 min-w-[100px]"><label class="block text-xs font-bold text-slate-500 mb-1">KPL (মাইলেজ)</label><input type="number" id="veh-kpl" step="0.01" required class="w-full px-3 py-2 border rounded"></div>
+                        <div class="flex-1 min-w-[120px]"><label class="block text-xs font-bold text-slate-500 mb-1">Start Km</label><input type="number" id="veh-start-km" required class="w-full px-3 py-2 border rounded"></div>
+                        <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded font-bold shadow hover:bg-emerald-700 h-[42px]">যুক্ত করুন</button>
                     </form>
                     <table class="ui-table w-full text-center">
                         <thead><tr><th>BA No</th><th>Type</th><th>KPL</th><th>Start Km</th><th>Action</th></tr></thead>
-                        <tbody>
-                            <tr><td class="font-bold">BA-1234</td><td>পিকআপ</td><td>৭.৫</td><td>১১৬৭৫৯</td><td><i class="fa-solid fa-trash text-red-500 cursor-pointer"></i></td></tr>
+                        <tbody id="list-vehicles">
+                            <!-- Loaded from Firebase -->
+                            <tr><td colspan="5" class="text-slate-400 p-4">কোনো গাড়ি পাওয়া যায়নি।</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -258,155 +249,30 @@
         <div id="rep-vdra" class="report-template hidden">
             <div class="text-center mb-2">
                 <h2 class="text-lg font-bold underline mb-1">গাড়ীর পিওএল এর হিসাব বিবরণী</h2>
-                <p class="text-xs font-bold">২০২৬ ইং সালে জুলাই মাসের</p>
-                <div class="text-left text-xs font-bold mt-1">
-                    <p>গাড়ীর বিএনং: ০৬০২০৪</p>
-                    <p>গাড়ীর ধরণ: পিকআপ</p>
-                </div>
+                <p class="text-xs font-bold">রিপোর্ট প্রিভিউ (ডেটা জেনারেট হওয়ার পর এখানে শো করবে)</p>
             </div>
-            <table class="govt-table text-center" style="font-size: 9px;">
-                <thead>
-                    <tr>
-                        <th rowspan="2">ক্রমিক<br>(১)</th>
-                        <th rowspan="2">তারিখ<br>(২)</th>
-                        <th rowspan="2">প্রাধিকার<br>(৩)</th>
-                        <th rowspan="2">শুরুর স্থান<br>(৪)</th>
-                        <th rowspan="2">বাহিরের সময়<br>(৫)</th>
-                        <th rowspan="2">গন্তব্য<br>(৬)</th>
-                        <th rowspan="2">আগমনের সময়<br>(৭)</th>
-                        <th colspan="2">প্রশিক্ষণ</th>
-                        <th colspan="2">মনোজ্ঞতা</th>
-                        <th colspan="2">প্রশাসনিক</th>
-                        <th colspan="2">অন্যান্য</th>
-                        <th colspan="2">মিটার রিডিং</th>
-                        <th rowspan="2">ট্যাংকে মজুদ<br>(১৮)</th>
-                        <th rowspan="2">ফুয়েল গ্রহণ<br>(২২)</th>
-                        <th rowspan="2">মজুদ<br>(২৪)</th>
-                        <th colspan="4">লুব্রিকেন্ট গ্রহণ</th>
-                    </tr>
-                    <tr>
-                        <th>কি.মি</th><th>তেল</th>
-                        <th>কি.মি</th><th>তেল</th>
-                        <th>কি.মি</th><th>তেল</th>
-                        <th>কি.মি</th><th>তেল</th>
-                        <th>শুরু</th><th>শেষ</th>
-                        <th>ই.অয়েল</th><th>গ্রিজ</th><th>ব্রেক</th><th>কুল্যান্ট</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>১</td><td>০৫-০৭</td><td>জিএস-০৬৩৫</td><td>এমটি ৯ ইবি</td><td>০৬০০</td><td>রাবার বাগান</td><td>১৮০০</td>
-                        <td>১২০</td><td>১৬</td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td>১১৬৭৫৯</td><td>১১৬৮৭৯</td><td>৮২</td><td>-</td><td>৬৬</td>
-                        <td></td><td></td><td></td><td></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="mt-4 flex justify-between text-xs font-bold w-1/2">
-                <div><p>মাসের শুরুতে কিঃমিঃ রিডিং: ১১৬৭৫৯</p><p>কেএমপিএল: ৭.৫</p></div>
-                <div><p>মাসের শুরুতে মজুদ: ৮২</p><p>মাসের মোট গ্রহণ: ১৯৮</p><p>মোট খরচ: ১৯৮</p></div>
-            </div>
-            <div class="sig-block"><div class="sig-line mx-auto">এমটিও স্বাক্ষর</div></div>
+            <!-- Dynamic table injected here during logic phase -->
         </div>
 
         <!-- 2. POL VOUCHER (A4 Portrait) -->
         <div id="rep-voucher" class="report-template hidden">
-            <div class="flex justify-between items-start mb-4 text-xs font-bold">
-                <div><p>আইভি/এমটি/৯৬৭৯/২</p></div>
-                <div class="text-center">
-                    <h2 class="text-lg font-bold underline">দ্বিতীয় অংশ- খুচরা ইস্যু</h2>
-                    <p>পিওএল এর অধিযাচনপত্র</p>
-                </div>
-                <div class="text-right"><p>বিএএফজেড-২২০৬</p></div>
+            <div class="text-center mb-2">
+                <h2 class="text-lg font-bold underline mb-1">দ্বিতীয় অংশ- খুচরা ইস্যু</h2>
+                <p class="text-xs font-bold">পিওএল এর অধিযাচনপত্র</p>
             </div>
-            <table class="govt-table text-center">
-                <thead>
-                    <tr>
-                        <th class="w-20">গাড়ীর বিএ নং</th>
-                        <th>ডিজেল</th><th>পেট্রোল</th><th>কেটু</th><th>এইচডি-৩০</th><th>জিএক্স-৯০</th><th>ব্রেক ফ্লুইড</th><th>গ্রীজ</th><th>কুলেন্ট</th><th>এটিএফ</th><th>স্বাক্ষর</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td class="font-bold">০৩৪৭৯২</td><td class="font-bold">৪৬</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td class="font-bold">০৬০৩৬৫</td><td class="font-bold">৮১</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td class="font-bold">০৫৯৭১০</td><td class="font-bold">২৫</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                    <tr class="font-bold bg-slate-50"><td class="text-right">মোটঃ</td><td>১৫২</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                </tbody>
-            </table>
-            <div class="flex justify-between text-sm font-bold mt-4"><p>তারিখঃ ০২-০৭-২০২৬</p></div>
         </div>
 
         <!-- 3. LEDGER (Legal Landscape) -->
         <div id="rep-ledger" class="report-template hidden">
-            <div class="flex justify-between items-end mb-4">
-                <div class="text-sm font-bold border border-black p-2">দ্রব্যঃ ডিজেল<br>ওজনঃ লিটার</div>
-                <div class="text-center"><h2 class="text-lg font-bold underline">সংরক্ষণঃ মজুদ, সরবরাহ এবং ভান্ডারের খতিয়ান</h2></div>
-                <div class="text-sm font-bold">বাসেফসা-২১০৯</div>
+            <div class="text-center mb-2">
+                <h2 class="text-lg font-bold underline mb-1">সংরক্ষণঃ মজুদ, সরবরাহ এবং ভান্ডারের খতিয়ান</h2>
             </div>
-            <table class="govt-table text-center">
-                <thead>
-                    <tr>
-                        <th class="w-24">তারিখ ও মাস</th>
-                        <th class="w-24">রশিদ নং</th>
-                        <th class="text-left">কাহার নিকট হইতে গ্রহণ অথবা কাহাকে বিতরণ করা হইল</th>
-                        <th class="w-24">গ্রহণ</th>
-                        <th class="w-24">বিতরণ</th>
-                        <th class="w-24">উদ্বৃত্ত</th>
-                        <th class="w-24">স্বাক্ষর</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>০১-০৭-২৬</td><td>-</td><td class="text-left">Opening Balance</td><td></td><td></td><td class="font-bold">৫৭৩.০০০</td><td></td></tr>
-                    <tr><td>০২-০৭-২৬</td><td>রামু-(১)</td><td class="text-left">এসএসডি রামু হতে সংগ্রহ</td><td class="font-bold">১৪০০.০০০</td><td></td><td class="font-bold">১৯৭৩.০০০</td><td></td></tr>
-                    <tr><td>০২-০৭-২৬</td><td>৯৬৭৯/২</td><td class="text-left">ইউনিট গাড়ীতে বিতরণ</td><td></td><td class="font-bold text-red-600">২৫২.০০০</td><td class="font-bold">১৭২১.০০০</td><td></td></tr>
-                </tbody>
-            </table>
         </div>
 
         <!-- 4. 3020 REPORT (A4 Portrait) -->
         <div id="rep-3020" class="report-template hidden">
-            <div class="text-center mb-4">
-                <h2 class="text-lg font-bold underline">মাসিক তৈল খরচের বিবরণী</h2>
-                <p class="text-sm font-bold">তারিখঃ জুলাই ২০২৬</p>
-            </div>
-            <table class="govt-table text-center" style="font-size: 10px;">
-                <thead>
-                    <tr>
-                        <th rowspan="2">বিএ নং</th>
-                        <th rowspan="2">গাড়ীর প্রকার</th>
-                        <th colspan="3">প্রশিক্ষণ বিবরণ</th>
-                        <th colspan="3">প্রশাসনিক বিবরণ</th>
-                        <th colspan="3">অপস বিবরণ</th>
-                        <th colspan="3">মোট</th>
-                        <th rowspan="2">ভিডিআরএ কিঃ মিঃ</th>
-                        <th rowspan="2">মন্তব্য</th>
-                    </tr>
-                    <tr>
-                        <th>লিঃ</th><th>কিঃমিঃ</th><th>দিন</th>
-                        <th>লিঃ</th><th>কিঃমিঃ</th><th>দিন</th>
-                        <th>লিঃ</th><th>কিঃমিঃ</th><th>দিন</th>
-                        <th>লিঃ</th><th>কিঃমিঃ</th><th>দিন</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="16" class="text-left font-bold bg-slate-50">পিকআপ</td></tr>
-                    <tr>
-                        <td class="font-bold">০৬০২০৪</td><td>পিকআপ</td>
-                        <td>১৩৮</td><td>৪৫০</td><td>১২</td>
-                        <td>৬০</td><td>১৪৮৫</td><td>৭</td>
-                        <td></td><td></td><td></td>
-                        <td>১৯৮</td><td>১৯৩৫</td><td>১৯</td>
-                        <td class="font-bold">১১৮২৪৪</td><td></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="mt-8 flex gap-10 text-xs">
-                <table class="govt-table w-1/2">
-                    <tr><th colspan="2">তেল খরচ</th></tr>
-                    <tr><td class="text-left">প্রশিক্ষণঃ</td><td class="font-bold text-right">১২২৪</td></tr>
-                    <tr><td class="text-left">প্রশাসনিকঃ</td><td class="font-bold text-right">১৫৯২</td></tr>
-                    <tr><td class="text-left font-bold">মোটঃ</td><td class="font-bold text-right">২৮১৬</td></tr>
-                </table>
+            <div class="text-center mb-2">
+                <h2 class="text-lg font-bold underline mb-1">মাসিক তৈল খরচের বিবরণী</h2>
             </div>
         </div>
 
@@ -415,13 +281,13 @@
     <!-- Logic & Firebase Setup -->
     <script type="module">
         // ==========================================
-        // 1. FIREBASE CONFIGURATION (Replace with your actual keys)
+        // 1. FIREBASE CONFIGURATION (LIVE)
         // ==========================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: ""AIzaSyAGi12dKqimVKH3-FGUtwQiRSSnpEY4ZJ4"",
+            apiKey: "AIzaSyAGi12dKqimVKH3-FGUtwQiRSSnpEY4ZJ4",
             authDomain: "eb-maint-tracker.firebaseapp.com",
             projectId: "eb-maint-tracker",
             storageBucket: "eb-maint-tracker.firebasestorage.app",
@@ -429,42 +295,191 @@
             appId: "1:680994357394:web:bdf543508c7df168c0664b"
         };
         
-        // Uncomment below to activate Firebase once config is set
-        /*
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        document.getElementById('db-status').innerHTML = '<i class="fa-solid fa-cloud"></i> Live Sync';
-        */
-
-        // ==========================================
-        // 2. DYNAMIC STATE MANAGEMENT (Local Fallback)
-        // ==========================================
-        const defaultPolItems = ['ডিজেল', 'পেট্রোল', 'কেটু', 'এইচডি-৩০', 'জিএক্স-৯০', 'ব্রেক ফ্লুইড', 'গ্রীজ', 'কুলেন্ট', 'এটিএফ', 'ইঞ্জিন অয়েল', 'ট্রান্সমিশন অয়েল'];
         
-        // Populate Dynamic Lists in UI
-        function renderSettings() {
-            // Render POL Items in Settings
-            const polList = document.getElementById('list-poltype');
-            polList.innerHTML = defaultPolItems.map(item => `
-                <li class="flex justify-between bg-slate-50 p-2 rounded border border-slate-100">
-                    <span>${item}</span> <i class="fa-solid fa-trash text-red-400 cursor-pointer"></i>
-                </li>
-            `).join('');
+        // Update connection status
+        document.getElementById('db-status').innerHTML = '<i class="fa-solid fa-cloud"></i> Live Sync';
+        document.getElementById('db-status').classList.remove('text-slate-400');
+        document.getElementById('db-status').classList.add('text-emerald-500');
 
-            // Render POL inputs in VDRA form dynamically
+        // State Arrays
+        let vehicleTypesData = [];
+        let polCategoriesData = [];
+        let vehiclesData = [];
+
+        // Escape HTML to prevent XSS
+        const escapeHTML = (str) => String(str ?? '').replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+
+        // ==========================================
+        // 2. FIRESTORE LISTENERS & RENDERERS
+        // ==========================================
+        
+        // --- Vehicle Types ---
+        onSnapshot(collection(db, 'pol_vehicleTypes'), (snapshot) => {
+            vehicleTypesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            // Render Settings List
+            const listEl = document.getElementById('list-vtype');
+            listEl.innerHTML = vehicleTypesData.length ? vehicleTypesData.map(v => `
+                <li class="flex justify-between bg-slate-50 p-2 rounded border border-slate-100">
+                    <span>${escapeHTML(v.name)}</span> 
+                    <i class="fa-solid fa-trash text-red-400 cursor-pointer" onclick="deleteDocument('pol_vehicleTypes', '${v.id}')"></i>
+                </li>
+            `).join('') : '<li class="text-slate-400 text-center text-xs py-2">খালি</li>';
+
+            // Render Dropdown in Add Vehicle Form
+            const selectEl = document.getElementById('veh-type');
+            selectEl.innerHTML = '<option value="">সিলেক্ট করুন</option>' + vehicleTypesData.map(v => `<option value="${escapeHTML(v.name)}">${escapeHTML(v.name)}</option>`).join('');
+        });
+
+        // --- POL Categories ---
+        onSnapshot(collection(db, 'pol_categories'), (snapshot) => {
+            polCategoriesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            // Render Settings List
+            const listEl = document.getElementById('list-poltype');
+            listEl.innerHTML = polCategoriesData.length ? polCategoriesData.map(p => `
+                <li class="flex justify-between bg-slate-50 p-2 rounded border border-slate-100">
+                    <span>${escapeHTML(p.name)}</span> 
+                    <i class="fa-solid fa-trash text-red-400 cursor-pointer" onclick="deleteDocument('pol_categories', '${p.id}')"></i>
+                </li>
+            `).join('') : '<li class="text-slate-400 text-center text-xs py-2">খালি</li>';
+
+            // Render Dynamic Inputs in VDRA Form
             const vdraPolInputs = document.getElementById('dynamic-pol-inputs');
-            vdraPolInputs.innerHTML = defaultPolItems.map(item => `
+            vdraPolInputs.innerHTML = polCategoriesData.length ? polCategoriesData.map(p => `
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-500 mb-1 truncate" title="${item}">${item}</label>
-                    <input type="number" placeholder="0" class="w-full px-2 py-1.5 border rounded bg-white text-sm">
+                    <label class="block text-[10px] font-bold text-slate-500 mb-1 truncate" title="${escapeHTML(p.name)}">${escapeHTML(p.name)}</label>
+                    <input type="number" step="0.01" data-pol-id="${p.id}" placeholder="0" class="w-full px-2 py-1.5 border rounded bg-white text-sm pol-input-field">
                 </div>
-            `).join('');
+            `).join('') : '<p class="text-xs text-slate-400 col-span-full">কোনো ক্যাটাগরি নেই। সেটিংসে যুক্ত করুন।</p>';
+        });
+
+        // --- Vehicles ---
+        onSnapshot(collection(db, 'pol_vehicles'), (snapshot) => {
+            vehiclesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            // Render Settings List
+            const listEl = document.getElementById('list-vehicles');
+            listEl.innerHTML = vehiclesData.length ? vehiclesData.map(v => `
+                <tr>
+                    <td class="font-bold">${escapeHTML(v.baNo)}</td>
+                    <td>${escapeHTML(v.type)}</td>
+                    <td>${v.kpl}</td>
+                    <td>${v.startKm}</td>
+                    <td><i class="fa-solid fa-trash text-red-500 cursor-pointer" onclick="deleteDocument('pol_vehicles', '${v.id}')"></i></td>
+                </tr>
+            `).join('') : '<tr><td colspan="5" class="text-slate-400 p-4">কোনো গাড়ি পাওয়া যায়নি।</td></tr>';
+
+            // Render VDRA Dropdown
+            const selectEl = document.getElementById('vdra-veh-select');
+            selectEl.innerHTML = '<option value="">গাড়ি সিলেক্ট করুন</option>' + vehiclesData.map(v => `<option value="${v.id}" data-kpl="${v.kpl}">${escapeHTML(v.baNo)} (${escapeHTML(v.type)})</option>`).join('');
+
+            // Render Daily Run Table (Basic generation)
+            const dailyListEl = document.getElementById('daily-run-tbody');
+            dailyListEl.innerHTML = vehiclesData.length ? vehiclesData.map(v => `
+                <tr>
+                    <td class="font-bold">${escapeHTML(v.baNo)}</td>
+                    <td>${v.startKm}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td><input type="number" placeholder="KM" class="w-24 px-2 py-1 border rounded text-center"></td>
+                    <td class="font-bold text-emerald-600">-</td>
+                    <td class="font-bold text-red-500">-</td>
+                    <td><button class="bg-sky-100 text-sky-700 px-3 py-1 rounded text-xs font-bold hover:bg-sky-500 hover:text-white transition">Update</button></td>
+                </tr>
+            `).join('') : '<tr><td colspan="8" class="text-slate-400 p-4">কোনো গাড়ি পাওয়া যায়নি। সেটিংস থেকে গাড়ি যুক্ত করুন।</td></tr>';
+        });
+
+        // ==========================================
+        // 3. FIRESTORE WRITE OPERATIONS
+        // ==========================================
+
+        // Add Vehicle Type
+        document.getElementById('btn-add-vtype').addEventListener('click', async () => {
+            const name = document.getElementById('input-vtype').value.trim();
+            if(name) {
+                try {
+                    await addDoc(collection(db, 'pol_vehicleTypes'), { name });
+                    document.getElementById('input-vtype').value = '';
+                } catch(e) { alert("Error adding data: " + e.message); }
+            }
+        });
+
+        // Add POL Category
+        document.getElementById('btn-add-poltype').addEventListener('click', async () => {
+            const name = document.getElementById('input-poltype').value.trim();
+            if(name) {
+                try {
+                    await addDoc(collection(db, 'pol_categories'), { name });
+                    document.getElementById('input-poltype').value = '';
+                } catch(e) { alert("Error adding data: " + e.message); }
+            }
+        });
+
+        // Add Vehicle
+        document.getElementById('form-add-vehicle').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const baNo = document.getElementById('veh-ba').value.trim();
+            const type = document.getElementById('veh-type').value;
+            const kpl = parseFloat(document.getElementById('veh-kpl').value);
+            const startKm = parseInt(document.getElementById('veh-start-km').value);
+            
+            if(baNo && type && !isNaN(kpl) && !isNaN(startKm)) {
+                try {
+                    await addDoc(collection(db, 'pol_vehicles'), { baNo, type, kpl, startKm, currentKm: startKm });
+                    e.target.reset();
+                } catch(err) { alert("Error adding vehicle: " + err.message); }
+            }
+        });
+
+        // Global Delete Helper
+        window.deleteDocument = async (collectionName, docId) => {
+            if(confirm("আপনি কি নিশ্চিত মুছে ফেলতে চান?")) {
+                try {
+                    await deleteDoc(doc(db, collectionName, docId));
+                } catch(e) { alert("Error deleting: " + e.message); }
+            }
+        };
+
+        // ==========================================
+        // 4. VDRA CALCULATION LOGIC
+        // ==========================================
+        const kmStartInput = document.getElementById('vdra-km-start');
+        const kmEndInput = document.getElementById('vdra-km-end');
+        const kmTotalInput = document.getElementById('vdra-km-total');
+        const fuelConsInput = document.getElementById('vdra-fuel-cons');
+        const vehSelect = document.getElementById('vdra-veh-select');
+
+        function calculateVDRA() {
+            const start = parseInt(kmStartInput.value) || 0;
+            const end = parseInt(kmEndInput.value) || 0;
+            const selectedOption = vehSelect.options[vehSelect.selectedIndex];
+            const kpl = parseFloat(selectedOption?.getAttribute('data-kpl')) || 0;
+
+            if (end > start) {
+                const totalKm = end - start;
+                kmTotalInput.value = totalKm;
+                if(kpl > 0) {
+                    fuelConsInput.value = (totalKm / kpl).toFixed(2);
+                } else {
+                    fuelConsInput.value = 0;
+                }
+            } else {
+                kmTotalInput.value = '';
+                fuelConsInput.value = '';
+            }
         }
 
-        renderSettings();
+        kmStartInput.addEventListener('input', calculateVDRA);
+        kmEndInput.addEventListener('input', calculateVDRA);
+        vehSelect.addEventListener('change', calculateVDRA);
 
         // ==========================================
-        // 3. UI TAB & PRINT CONTROL
+        // 5. UI TAB & PRINT CONTROL
         // ==========================================
         window.showTab = function(tabId) {
             document.querySelectorAll('.form-section').forEach(el => el.classList.add('hidden'));
@@ -474,28 +489,24 @@
         };
 
         window.showReportPreview = function(repId, paperSize) {
-            // Hide all print templates
             document.querySelectorAll('.report-template').forEach(el => {
                 el.classList.remove('block');
                 el.classList.add('hidden');
             });
-            // Show selected template in hidden print area
             document.getElementById(repId).classList.remove('hidden');
             document.getElementById(repId).classList.add('block');
             
-            // Show instruction
             document.getElementById('print-instruction').classList.remove('hidden');
             document.getElementById('paper-size-text').innerText = paperSize;
             
-            // Render visible preview inside the preview box
             const previewBox = document.getElementById('preview-box');
             previewBox.innerHTML = document.getElementById(repId).outerHTML;
             
-            // Ensure the cloned node is visible in the preview box
             const clonedTemplate = previewBox.querySelector('.report-template');
             clonedTemplate.classList.remove('hidden');
             clonedTemplate.classList.add('block');
         };
+
     </script>
 </body>
 </html>
