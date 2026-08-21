@@ -31,7 +31,7 @@
 <body class="min-h-screen text-slate-800 flex flex-col relative z-0 bg-gray-100">
 
     <!-- INITIAL LOADING SPINNER -->
-    <div id="initial-loader" class="fixed inset-0 z-[200] flex items-center justify-center login-bg transition-opacity duration-300">
+    <div id="initial-loader" class="fixed inset-0 z-[200] flex items-center justify-center login-bg">
         <div class="text-white text-center">
             <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-3"></i>
             <p class="text-sm font-medium">লোড হচ্ছে...</p>
@@ -208,7 +208,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
                             <h4 class="font-bold text-slate-700 mb-3 border-b pb-2 flex items-center gap-2"><i class="fa-solid fa-file-signature text-blue-500"></i> প্রশাসনিক কার্যক্রমের ধরন</h4>
-                            <p class="text-[11px] text-slate-500 mb-4 bg-slate-50 p-2 rounded-lg border border-slate-200">"মোট দিন" শুধু রেফারেন্সের জন্য — এলার্ট গণনায় ব্যবহৃত হয়বিধা দেয় না।</p>
+                            <p class="text-[11px] text-slate-500 mb-4 bg-slate-50 p-2 rounded-lg border border-slate-200">"মোট দিন" শুধু রেফারেন্সের জন্য — এলার্ট গণনায় ব্যবহৃত হয় না।</p>
                             <form id="form-admin-type" class="space-y-3 mb-4">
                                 <input type="text" id="admin-type-name" placeholder="প্রকার (যেমন: ছুটি)" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm">
                                 <input type="number" id="admin-type-days" placeholder="মোট দিন (রেফারেন্স, ঐচ্ছিক)" min="1" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm">
@@ -358,19 +358,6 @@
             console.log("Offline persistence error:", err.code);
         });
 
-        // Safety fallback to hide loader if Firebase takes too long or is blocked
-        setTimeout(() => {
-            const loader = document.getElementById('initial-loader');
-            if (loader && !loader.classList.contains('hidden')) {
-                loader.classList.add('hidden');
-                if (!auth.currentUser) {
-                    document.getElementById('login-screen').classList.remove('hidden');
-                    document.getElementById('main-app').classList.add('hidden');
-                    document.getElementById('main-app').classList.remove('flex');
-                }
-            }
-        }, 1500);
-
         // ফিক্সড, প্রি-জেনারেটেড কোম্পানি তালিকা — কোনো সেটআপ/CRUD লাগবে না
         const FIXED_COMPANIES = ['এ কোম্পানি', 'বি কোম্পানি', 'সি কোম্পানি', 'ডি কোম্পানি', 'সদর কোম্পানি'];
         const companyIcons = ['fa-users-rectangle', 'fa-users-rectangle', 'fa-users-rectangle', 'fa-users-rectangle', 'fa-house-flag'];
@@ -462,7 +449,7 @@
 
         function guardWrite() {
             if (currentUserRole === 'viewer') {
-                window.showToast('আপনার একাউন্টে শুধু দেখার অনুমতি আছে, কোনো পরিবর্তন করা যাবে না', true);
+                window.showToast('আপনার একাউন্টে শুধু দেখার অনুমতি আছে, কোনো পরিবর্তন করা যাবে চৈতন্য', true);
                 return true;
             }
             return false;
