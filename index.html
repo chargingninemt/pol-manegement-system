@@ -7,21 +7,7 @@
     <meta name="description" content="সেনাসদস্য কার্যক্রম মনিটরিং সিস্টেম — প্রশাসনিক ও প্রশিক্ষণ কার্যক্রম ট্র্যাকিং">
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23059669'%3E%3Cpath d='M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4z'/%3E%3C/svg%3E">
-    <!--
-      ⚠️ CSP রক্ষণাবেক্ষণ নোট: script-src-এর 'sha256-...' হ্যাশ এই ফাইলের একমাত্র
-      "module"-টাইপ স্ক্রিপ্ট ব্লকের হুবহু কনটেন্টের সাথে মেলাতে হয়। সেই ব্লকে যেকোনো
-      পরিবর্তনের পর হ্যাশ রিজেনারেট করে বসাতে হবে (regenerate_csp_hash.py ব্যবহার করুন)।
-    -->
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self';
-        script-src 'self' 'sha256-fttpEjnRxCJbwTDpVV9KirvUqy2HWs13QFOYZl6azMY=_REGENERATE_ME' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com;
-        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
-        font-src https://cdnjs.cloudflare.com https://fonts.gstatic.com data:;
-        img-src 'self' data: https:;
-        connect-src 'self' https://*.googleapis.com https://*.googleusercontent.com;
-        object-src 'none';
-        base-uri 'self';
-    ">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -45,7 +31,7 @@
 <body class="min-h-screen text-slate-800 flex flex-col relative z-0 bg-gray-100">
 
     <!-- INITIAL LOADING SPINNER -->
-    <div id="initial-loader" class="fixed inset-0 z-[200] flex items-center justify-center login-bg">
+    <div id="initial-loader" class="fixed inset-0 z-[200] flex items-center justify-center login-bg transition-opacity duration-300">
         <div class="text-white text-center">
             <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-3"></i>
             <p class="text-sm font-medium">লোড হচ্ছে...</p>
@@ -371,6 +357,19 @@
         enableIndexedDbPersistence(db).catch((err) => {
             console.log("Offline persistence error:", err.code);
         });
+
+        // Safety fallback to hide loader if Firebase takes too long or is blocked
+        setTimeout(() => {
+            const loader = document.getElementById('initial-loader');
+            if (loader && !loader.classList.contains('hidden')) {
+                loader.classList.add('hidden');
+                if (!auth.currentUser) {
+                    document.getElementById('login-screen').classList.remove('hidden');
+                    document.getElementById('main-app').classList.add('hidden');
+                    document.getElementById('main-app').classList.remove('flex');
+                }
+            }
+        }, 1500);
 
         // ফিক্সড, প্রি-জেনারেটেড কোম্পানি তালিকা — কোনো সেটআপ/CRUD লাগবে না
         const FIXED_COMPANIES = ['এ কোম্পানি', 'বি কোম্পানি', 'সি কোম্পানি', 'ডি কোম্পানি', 'সদর কোম্পানি'];
